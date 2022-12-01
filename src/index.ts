@@ -1,3 +1,2 @@
-import MarkdownNav from './index.vue'
-import Mark from '../dist/index.js'
+import  MarkdownNav from './index.vue'
 export default MarkdownNav

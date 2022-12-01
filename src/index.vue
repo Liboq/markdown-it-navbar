@@ -5,7 +5,7 @@
         indexActive === index ? 'anchor-item anchor-item-active' : 'anchor-item'
       "
       :style="style"
-      @click="indexActive = index"
+      @click="itemClick(index,item)"
       v-for="(item, index) in menuText"
       :key="index"
       :href="'#' + slugify(item)"
@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref, defineEmits } from 'vue';
 import MarkdownIt from 'markdown-it';
 import { slugify } from 'transliteration';
 import { throttle } from 'lodash';
@@ -39,15 +39,28 @@ const props = defineProps({
     default:'h2'
   }
 });
+onMounted(() => {
+  getActiveIndex();
+});
+onUnmounted(() => {
+  document.removeEventListener('scroll', winScroll, false);
+});
 const indexActive = ref(0);
+const html = ref('');
+const menu = ref();
+const emit= defineEmits(['itemClick'])
+const itemClick = (index:number,item:any) =>{
+  indexActive.value = index
+  emit('itemClick',item)
+}
+
 const anchorClass = computed((a) => {
   return {
     'anchor-list': !props.classes,
     [`${props.classes}`]: props.classes
   };
 });
-const html = ref('');
-const menu = ref();
+
 html.value = MarkdownIt().render(props.content);
 menu.value = html.value.match(regExe);
 let menuText = ref(['']);
@@ -79,15 +92,10 @@ const getActiveIndex = () => {
   winScroll();
 };
 
-onMounted(() => {
-  getActiveIndex();
-});
-onUnmounted(() => {
-  document.removeEventListener('scroll', winScroll, false);
-});
+
 </script>
 
-<style lang="scss">
+<style  lang="scss">
 .anchor-list  {
   margin: 10px;
   padding: 10px;
