@@ -1,6 +1,6 @@
 {
   "name": "markdown-it-navbar",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "type": "module",
   "main": "lib/index.js",
   "scripts": {
@@ -31,5 +31,11 @@
     "npm": "^9.1.2",
     "sass": "^1.56.1",
     "sass-loader": "^7.0.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Liboq/markdown-it-navbar"
+  },
+  "author": "",
+  "license": "MIT"
 }
