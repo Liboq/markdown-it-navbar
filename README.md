@@ -37,4 +37,4 @@ itemClick: 参数是选中的文字;
 
 ## example
 
-[blog]('https://liboqiao.top/article?titleEn=browser-rendering-principles')
+[blog](https://liboqiao.top/article?titleEn=browser-rendering-principles)
