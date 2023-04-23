@@ -29,6 +29,10 @@ import { slugify } from "transliteration";
 import { throttle } from "lodash";
 const regExe = /<h\d(([\s\S])*?)<\/h\d>/g;
 const props = defineProps({
+  container:{
+    type:String,
+    default:''
+  },
   content: {
     type: String,
     default: "",
@@ -75,8 +79,11 @@ const anchorClass = computed(() => {
     };
   }
 });
-
-html.value = MarkdownIt().render(props.content);
+if(props.container){
+  html.value = document.querySelector(props.container)!.innerHTML
+}else{
+  html.value = MarkdownIt().render(props.content);
+}
 menu.value = html.value.match(regExe);
 
 let menuText = ref<Array<MenuText>>([]);

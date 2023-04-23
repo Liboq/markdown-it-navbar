@@ -5,6 +5,7 @@
 ## 特性
 
 - 🚀 支持 markdown 导航
+- 🚀 支持 生成页面元素 导航
 - 🚀 支持 自定义 样式
 - 💪 支持多框架
 - 💪 支持自定义 iconfont
@@ -12,14 +13,15 @@
 
 ## 安装
 
-```
-import MarkdownNav from 'markdown-it-navbar'
-import 'markdown-it-navbar/style.css'
+```js
+import MarkdownNav from "markdown-it-navbar";
+import "markdown-it-navbar/style.css";
 ```
 
 ## props
 
 ```js
+contianer:"", // 需要生成 导航的元素 例如 #markdown
 content：""， //渲染的md内容
 target:[],    //抓取的元素  默认为 ["h2", "h3", "h4", "h5"]
 style:[Object,String]， //nav-item的样式
