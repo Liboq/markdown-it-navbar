@@ -29,9 +29,9 @@ import { slugify } from "transliteration";
 import { throttle } from "lodash";
 const regExe = /<h\d(([\s\S])*?)<\/h\d>/g;
 const props = defineProps({
-  container:{
-    type:String,
-    default:''
+  container: {
+    type: String,
+    default: "",
   },
   content: {
     type: String,
@@ -79,9 +79,9 @@ const anchorClass = computed(() => {
     };
   }
 });
-if(props.container){
-  html.value = document.querySelector(props.container)!.innerHTML
-}else{
+if (props.container) {
+  html.value = document.querySelector(props.container)!.innerHTML;
+} else {
   html.value = MarkdownIt().render(props.content);
 }
 menu.value = html.value.match(regExe);
@@ -99,6 +99,9 @@ menu.value.forEach((item: string) => {
   }
   if (s.indexOf("</span>") !== -1) {
     s = s.replace("</span>", "").replace(/<span(([\s\S])*?)>/g, ""); // 过滤其他标签
+  }
+  if (s.indexOf("</a>") !== -1) {
+    s = s.replace("</a>", "").replace(/<a(([\s\S])*?)>/g, ""); // 过滤其他标签
   }
 
   menuText.value.push({ text: s, level: index + 1 });
