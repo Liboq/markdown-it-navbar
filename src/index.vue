@@ -1,6 +1,8 @@
 <template>
   <div :style="{ height }" :class="anchorClass">
-    <div v-if="title&&menuText.length>0" class="anchor-title">{{ title }}</div>
+    <div v-if="title && menuText.length > 0" class="anchor-title">
+      {{ title }}
+    </div>
     <li
       :class="'li-h' + item.level"
       v-for="(item, index) in menuText"
@@ -57,6 +59,10 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  route: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 type MenuText = {
@@ -99,12 +105,20 @@ window.history.replaceState = function (
   window.dispatchEvent(event);
 };
 
-window.addEventListener("pushstate", function (event: any) {
-  setTimeout(() => {
-    getMenuText();
-  }, 1);
-  console.log("pushstate event", event);
-});
+if (props.route) {
+  window.addEventListener("pushstate", function (event: any) {
+    setTimeout(() => {
+      getMenuText();
+    }, 1);
+  });
+  window.addEventListener("popstate", function (event: any) {
+    if (event.state) {
+      setTimeout(() => {
+        getMenuText();
+      }, 1);
+    }
+  });
+}
 // window.addEventListener('replacestate', function(event: any) {
 //   console.log('replacestate event', event);
 // });

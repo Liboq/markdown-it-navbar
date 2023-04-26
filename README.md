@@ -28,6 +28,7 @@ style:[Object,String]， //nav-item的样式
 classes:"",    //自定义组件类名  String,Array
 title:"", // 标题
 height:"" // 自定义高度
+route:Boolean // 默认false，是否需要监听浏览器路由变化来渲染menutext
 
 ```
 
