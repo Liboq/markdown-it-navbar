@@ -1,6 +1,6 @@
 <template>
   <div :style="{ height }" :class="anchorClass">
-    <div v-if="title" class="anchor-title">{{ title }}</div>
+    <div v-if="title&&menuText.length>0" class="anchor-title">{{ title }}</div>
     <li
       :class="'li-h' + item.level"
       v-for="(item, index) in menuText"
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
 import MarkdownIt from "markdown-it";
 import { slugify } from "transliteration";
 import { throttle } from "lodash";
@@ -58,6 +58,7 @@ const props = defineProps({
     default: "",
   },
 });
+
 type MenuText = {
   text: string;
   level: number;
@@ -65,6 +66,49 @@ type MenuText = {
 const indexActive = ref(0);
 const html = ref("");
 const menu = ref();
+const scrollTop = ref(0);
+let menuText = ref<Array<MenuText>>([]);
+type State = {
+  [key: string]: any;
+};
+const pushState = window.history.pushState;
+window.history.pushState = function (
+  state: State,
+  title: string,
+  url?: string | null
+): void {
+  pushState.apply(window.history, [state, title, url]);
+  const event: any = new Event("pushstate");
+  event.state = state;
+  event.title = title;
+  event.url = url;
+  window.dispatchEvent(event);
+};
+
+const replaceState = window.history.replaceState;
+window.history.replaceState = function (
+  state: State,
+  title: string,
+  url?: string | null
+): void {
+  replaceState.apply(window.history, [state, title, url]);
+  const event: any = new Event("replacestate");
+  event.state = state;
+  event.title = title;
+  event.url = url;
+  window.dispatchEvent(event);
+};
+
+window.addEventListener("pushstate", function (event: any) {
+  setTimeout(() => {
+    getMenuText();
+  }, 1);
+  console.log("pushstate event", event);
+});
+// window.addEventListener('replacestate', function(event: any) {
+//   console.log('replacestate event', event);
+// });
+
 const anchorClass = computed(() => {
   if (typeof props.classes === "string") {
     return {
@@ -79,34 +123,34 @@ const anchorClass = computed(() => {
     };
   }
 });
-if (props.container) {
-  html.value = document.querySelector(props.container)!.innerHTML;
-} else {
-  html.value = MarkdownIt().render(props.content);
-}
-menu.value = html.value.match(regExe);
+const getMenuText = () => {
+  menuText.value = [];
+  if (props.container) {
+    html.value = document.querySelector(props.container)!.innerHTML;
+  } else {
+    html.value = MarkdownIt().render(props.content);
+  }
+  menu.value = html.value.match(regExe);
+  menuText.value.pop();
+  menu.value.forEach((item: string) => {
+    let s = "";
+    let index;
+    let reg = new RegExp(/<h\d(([\s\S])*?)>/, "g");
+    s = item.replace(/<\/h\d>/, "").replace(reg, "");
+    index = props.target.indexOf(item.split("")[1] + item.split("")[2]);
+    if (index === -1) {
+      return;
+    }
+    if (s.indexOf("</span>") !== -1) {
+      s = s.replace("</span>", "").replace(/<span(([\s\S])*?)>/g, ""); // 过滤其他标签
+    }
+    if (s.indexOf("</a>") !== -1) {
+      s = s.replace("</a>", "").replace(/<a(([\s\S])*?)>/g, ""); // 过滤其他标签
+    }
 
-let menuText = ref<Array<MenuText>>([]);
-menuText.value.pop();
-menu.value.forEach((item: string) => {
-  let s = "";
-  let index;
-  let reg = new RegExp(/<h\d(([\s\S])*?)>/, "g");
-  s = item.replace(/<\/h\d>/, "").replace(reg, "");
-  index = props.target.indexOf(item.split("")[1] + item.split("")[2]);
-  if (index === -1) {
-    return;
-  }
-  if (s.indexOf("</span>") !== -1) {
-    s = s.replace("</span>", "").replace(/<span(([\s\S])*?)>/g, ""); // 过滤其他标签
-  }
-  if (s.indexOf("</a>") !== -1) {
-    s = s.replace("</a>", "").replace(/<a(([\s\S])*?)>/g, ""); // 过滤其他标签
-  }
-
-  menuText.value.push({ text: s, level: index + 1 });
-});
-const scrollTop = ref(0);
+    menuText.value.push({ text: s, level: index + 1 });
+  });
+};
 const winScroll = throttle(() => {
   document.addEventListener("scroll", winScroll, false);
   scrollTop.value =
@@ -123,8 +167,8 @@ const winScroll = throttle(() => {
 const getActiveIndex = () => {
   winScroll();
 };
-
 onMounted(() => {
+  getMenuText();
   getActiveIndex();
 });
 onUnmounted(() => {
