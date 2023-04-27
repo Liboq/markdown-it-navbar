@@ -15,7 +15,7 @@
 
 ```js
 import MarkdownNav from "markdown-it-navbar";
-import "markdown-it-navbar/style.css";
+import "markdown-it-navbar/lib/style.css";
 ```
 
 ## props

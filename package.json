@@ -1,6 +1,6 @@
 {
   "name": "markdown-it-navbar",
-  "version": "0.1.5",
+  "version": "0.1.9",
   "type": "module",
   "main": "lib/index.js",
   "scripts": {

@@ -105,20 +105,6 @@ window.history.replaceState = function (
   window.dispatchEvent(event);
 };
 
-if (props.route) {
-  window.addEventListener("pushstate", function (event: any) {
-    setTimeout(() => {
-      getMenuText();
-    }, 1);
-  });
-  window.addEventListener("popstate", function (event: any) {
-    if (event.state) {
-      setTimeout(() => {
-        getMenuText();
-      }, 1);
-    }
-  });
-}
 // window.addEventListener('replacestate', function(event: any) {
 //   console.log('replacestate event', event);
 // });
@@ -140,7 +126,7 @@ const anchorClass = computed(() => {
 const getMenuText = () => {
   menuText.value = [];
   if (props.container) {
-    html.value = document.querySelector(props.container)!.innerHTML;
+    html.value = document.querySelector(props.container)!.innerHTML || "";
   } else {
     html.value = MarkdownIt().render(props.content);
   }
@@ -181,12 +167,25 @@ const winScroll = throttle(() => {
 const getActiveIndex = () => {
   winScroll();
 };
+const deferGetMenu = (e: any) => {
+  if (e.state) {
+    setTimeout(() => {
+      getMenuText();
+    }, 1);
+  }
+};
 onMounted(() => {
+  if (props.route) {
+    window.addEventListener("pushstate", deferGetMenu);
+    window.addEventListener("popstate", deferGetMenu);
+  }
   getMenuText();
   getActiveIndex();
 });
 onUnmounted(() => {
   document.removeEventListener("scroll", winScroll, false);
+  window.removeEventListener("pushstate", deferGetMenu);
+  window.removeEventListener("popstate", deferGetMenu);
 });
 </script>
 
