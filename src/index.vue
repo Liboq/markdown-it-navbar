@@ -3,24 +3,26 @@
     <div v-if="title && menuText.length > 0" class="anchor-title">
       {{ title }}
     </div>
-    <li
-      :class="'li-h' + item.level"
-      v-for="(item, index) in menuText"
-      :key="index"
-      :style="style"
-    >
-      <a
-        :class="
-          indexActive === index
-            ? 'anchor-item anchor-item-active'
-            : 'anchor-item'
-        "
-        @click="indexActive = index"
-        :href="'#' + slugify(item.text)"
+    <div class="menu-list">
+      <li
+        :class="'li-h' + item.level"
+        v-for="(item, index) in menuText"
+        :key="index"
+        :style="style"
       >
-        {{ item.text }}</a
-      >
-    </li>
+        <a
+          :class="
+            indexActive === index
+              ? 'anchor-item anchor-item-active'
+              : 'anchor-item'
+          "
+          @click="indexActive = index"
+          :href="'#' + slugify(item.text)"
+        >
+          {{ item.text }}</a
+        >
+      </li>
+    </div>
   </div>
 </template>
 
@@ -53,7 +55,7 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: "内容",
+    default: "目录",
   },
   height: {
     type: String,
@@ -199,7 +201,21 @@ onUnmounted(() => {
   font-weight: 600;
   margin-bottom: 5px;
 }
-.anchor-container {
+.anchor-list {
+  margin: 10px;
+  padding: 10px;
+  position: fixed;
+  top: 60px;
+  right: 10px;
+  user-select: none;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+.menu-list {
+  overflow: auto;
+  padding: 10px 2px;
   &::-webkit-scrollbar-track {
     background-color: #fff;
   }
@@ -217,21 +233,11 @@ onUnmounted(() => {
     width: 0;
   }
 }
-.anchor-list {
-  margin: 10px;
-  padding: 10px;
-  position: fixed;
-  top: 60px;
-  right: 10px;
-  user-select: none;
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  overflow: auto;
-  background-color: #fff;
-}
 li {
   margin-bottom: 20px;
+}
+.li-h1 {
+  margin-left: 0px;
 }
 .li-h2 {
   margin-left: 20px;
