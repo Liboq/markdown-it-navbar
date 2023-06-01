@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import MarkdownIt from "markdown-it";
 import { slugify } from "transliteration";
 import { throttle } from "lodash";
@@ -51,7 +51,7 @@ const props = defineProps({
   },
   target: {
     type: Array,
-    default: ["h2", "h3", "h4", "h5"],
+    default: ["h1", "h2", "h3", "h4", "h5"],
   },
   title: {
     type: String,
@@ -65,12 +65,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  isWatched: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 type MenuText = {
   text: string;
   level: number;
 };
+
 const indexActive = ref(0);
 const html = ref("");
 const menu = ref();
@@ -127,12 +132,7 @@ const anchorClass = computed(() => {
 });
 const getMenuText = () => {
   menuText.value = [];
-  if (props.container) {
-    html.value = document.querySelector(props.container)!.innerHTML || "";
-  } else {
-    html.value = MarkdownIt().render(props.content);
-  }
-  menu.value = html.value.match(regExe);
+  menu.value = html.value.match(regExe) || [];
   menuText.value.pop();
   menu.value.forEach((item: string) => {
     let s = "";
@@ -176,11 +176,31 @@ const deferGetMenu = (e: any) => {
     }, 1);
   }
 };
+const transTextToHtml = () => {
+  if (props.container) {
+    html.value = contentText.value;
+  } else {
+    html.value = MarkdownIt().render(props.content);
+  }
+};
+const contentText = computed(() => {
+  if (!props.container) {
+    return props.content;
+  }
+  return document.querySelector(props.container)!.innerHTML || "";
+});
+if (props.isWatched) {
+  watch(contentText, () => {
+    transTextToHtml();
+    getMenuText();
+  });
+}
 onMounted(() => {
   if (props.route) {
     window.addEventListener("pushstate", deferGetMenu);
     window.addEventListener("popstate", deferGetMenu);
   }
+  transTextToHtml();
   getMenuText();
   getActiveIndex();
 });
@@ -191,7 +211,7 @@ onUnmounted(() => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @media screen and (max-width: 500px) {
   .anchor-list {
     display: none !important;

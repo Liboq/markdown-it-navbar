@@ -21,15 +21,15 @@ import "markdown-it-navbar/lib/style.css";
 ## props
 
 ```js
-contianer:"", // 需要生成 导航的元素 例如 #markdown
+contianer:"", // 需要生成 导航的元素 例如 #markdown 与content二选一
 content：""， //渲染的md内容
-target:[],    //抓取的元素  默认为 ["h2", "h3", "h4", "h5"]
+target:[],    //抓取的元素  默认为 ["h1","h2", "h3", "h4", "h5"]
 style:[Object,String]， //nav-item的样式
 classes:"",    //自定义组件类名  String,Array
 title:"", // 标题
 height:"" // 自定义高度
 route:Boolean // 默认false，是否需要监听浏览器路由变化来渲染menutext
-
+isWatched:Boolean // 默认false 是否需要监听页面内容变化实时渲染menu
 ```
 
 ## api
