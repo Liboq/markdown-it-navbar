@@ -69,6 +69,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  scrollEL: {
+    type: String,
+    default: "document",
+  },
 });
 
 type MenuText = {
@@ -153,21 +157,34 @@ const getMenuText = () => {
     menuText.value.push({ text: s, level: index + 1 });
   });
 };
-const winScroll = throttle(() => {
-  document.addEventListener("scroll", winScroll, false);
-  scrollTop.value =
-    document.documentElement.scrollTop || document.body.scrollTop;
+const winScroll = throttle((e) => {
+  let offsetTop
+  if(props.scrollEL == "document"){
+    offsetTop = 0
+    scrollTop.value= document.documentElement.scrollTop || document.body.scrollTop
+  }else{
+    scrollTop.value = e.target.scrollTop
+    offsetTop = e.target.offsetTop
+
+  }
   for (let value of menuText.value) {
     if (document.getElementById(slugify(value.text))) {
       const entry = document.getElementById(slugify(value.text)) as HTMLElement;
-      if (entry.offsetTop - 1 <= scrollTop.value) {
+      if (entry.offsetTop - 1-offsetTop <= scrollTop.value) {
         indexActive.value = menuText.value.indexOf(value);
       }
     }
   }
 }, 10);
 const getActiveIndex = () => {
-  winScroll();
+  let scrollel;
+  if (props.scrollEL == "document") {
+    scrollel = document;
+  } else {
+    scrollel = document.querySelector(props.scrollEL);
+  }
+  scrollel!.addEventListener("scroll", winScroll, false);
+
 };
 const deferGetMenu = (e: any) => {
   if (e.state) {
