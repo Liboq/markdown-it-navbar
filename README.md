@@ -1,3 +1,11 @@
+
+[![NPM version][npm-image]][npm-url]
+<a >
+    <img alt="license" src="https://img.shields.io/badge/license-MIT-brightgreen">
+</a>
+
+[npm-image]: https://img.shields.io/npm/v/markdown-it-navbar
+[npm-url]: https://www.npmjs.com/package/markdown-it-navbar
 # markdown-it-navbar
 
 针对 vue3 的 markdwon 的导航组件
